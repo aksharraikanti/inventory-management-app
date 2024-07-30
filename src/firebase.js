@@ -1,28 +1,14 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics, isSupported } from "firebase/analytics"; // Import isSupported for conditional analytics initialization
+import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
+import { getAuth } from 'firebase/auth';
+import { getStorage } from 'firebase/storage';
+import { getAnalytics } from 'firebase/analytics';
 const firebaseConfig = {
-    
+    // Your web app's Firebase configuration
 };
-
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const firestore = getFirestore(app);
+const auth = getAuth(app); // Initialize Auth
 
-// Function to initialize analytics
-async function initializeAnalytics(app) {
-  if (typeof window !== "undefined" && await isSupported()) {
-    return getAnalytics(app);
-  }
-  return null;
-}
-
-const analytics = initializeAnalytics(app);
-
-// Export Firestore (and analytics if needed)
-export { firestore, analytics };
+export { firestore, auth };
