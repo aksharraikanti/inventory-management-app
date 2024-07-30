@@ -32,6 +32,50 @@ export default function Home() {
   const [inventory, setInventory] = useState([]);
   const [open, setOpen] = useState(false);
   const [itemName, setItemName] = useState('');
+
+  useEffect(() => {
+    updateInventory();
+  }, []);
+
+  const updateInventory = async () => {
+    const snapshot = query(collection(firestore, 'inventory'));
+    const docs = await getDocs(snapshot);
+    const inventoryList = [];
+    docs.forEach((doc) => {
+      inventoryList.push({ name: doc.id, ...doc.data() });
+    });
+    setInventory(inventoryList);
+  }
+
+  const addItem = async (item) => {
+    const docRef = doc(collection(firestore, 'inventory'), item);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      const { quantity } = docSnap.data();
+      await setDoc(docRef, { quantity: quantity + 1 });
+    } else {
+      await setDoc(docRef, { quantity: 1 });
+    }
+    await updateInventory();
+  }
+
+  const removeItem = async (item) => {
+    const docRef = doc(collection(firestore, 'inventory'), item);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      const { quantity } = docSnap.data();
+      if (quantity === 1) {
+        await deleteDoc(docRef);
+      } else {
+        await setDoc(docRef, { quantity: quantity - 1 });
+      }
+    }
+    await updateInventory();
+  }
+
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
   return (
     <Box
       width="100vw"
@@ -81,7 +125,7 @@ export default function Home() {
         <Box
           width="800px"
           height="100px"
-          bgcolor={'#ADD8E6'}
+          bgcolor={'#FFFFFF'}
           display={'flex'}
           justifyContent={'center'}
           alignItems={'center'}
@@ -91,7 +135,7 @@ export default function Home() {
           </Typography>
         </Box>
         <Stack width="800px" height="300px" spacing={2} overflow={'auto'}>
-          {inventory.map(({name, quantity}) => (
+          {inventory.map(({ name, quantity }) => (
             <Box
               key={name}
               width="100%"
@@ -99,7 +143,7 @@ export default function Home() {
               display={'flex'}
               justifyContent={'space-between'}
               alignItems={'center'}
-              bgcolor={'#f0f0f0'}
+              bgcolor={'#FFFFFF'}
               paddingX={5}
             >
               <Typography variant={'h3'} color={'#333'} textAlign={'center'}>
@@ -118,48 +162,3 @@ export default function Home() {
     </Box>
   )
 }
-
-const updateInventory = async () => {
-  const snapshot = query(collection(firestore, 'inventory'));
-  const docs = await getDocs(snapshot);
-  const inventoryList = [];
-  docs.forEach((doc) => {
-    inventoryList.push({name: doc.id, ...doc.data()});
-  });
-  setInventory(inventoryList);
-}
-
-useEffect(() => {
-  updateInventory();
-}, []);
-
-const addItem = async (item) => {
-  const docRef = doc(collection(firestoyre, 'inventory'), item);
-  const docSnap = await getDoc(docRef);
-  if (docSnap.exists()) {
-    const { quantity } = docSnap.data();
-    await setDoc(docRef, { quantity: quantity + 1 });
-  }
-  else {
-    await setDoc(docRef, { quantity: 1 });
-  }
-  await updateInventory();
-}
-
-const removeItem = async (item) => {
-  const docRef = doc(collection(firestore, 'inventory'), item);
-  const docSnap = await getDoc(docRef);
-  if (docSnap.exists()) {
-    const { quantity } = docSnap.data();
-    if (quantity === 1) {
-      await deleteDoc(docRef);
-    }
-    else {
-      await setDoc(docRef, { quantity: quantity - 1 });
-    }
-  }
-  await updateInventory();
-}
-
-const handleOpen = () => setOpen(true);
-const handleClose = () => setOpen(false);
