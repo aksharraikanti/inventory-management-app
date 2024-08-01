@@ -22,6 +22,8 @@ The Pantry Tracker App is a web application that helps users manage their pantry
 - **Utilities**: jsPDF for PDF export, react-csv for CSV export, react-webcam for webcam integration
 
 #### Note: This project has been deployed on Vercel
+Access this project on Vercel here: 
+https://inventory-management-app-pi.vercel.app/
 
 
 ## Prerequisites
